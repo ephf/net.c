@@ -1,3 +1,3 @@
 a:
-	gcc $(tar).c lib/net.c -o out
+	gcc example/$(tar).c lib/net.c -o out
 	./out

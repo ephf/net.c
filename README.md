@@ -2,7 +2,7 @@
 
 Simple tcp and udp client/server in c
 
-> tcp example (see [tcp.c](./tcp.c)) `$ make tar=tcp`
+> tcp example (see [tcp.c](./example/tcp.c)) `$ make tar=tcp`
 
 ```c
 #include "lib/net.h"
@@ -28,7 +28,7 @@ int main() {
 }
 ```
 
-> udp example (see [tcp.c](./tcp.c)) `$ make tar=udp`
+> udp example (see [udp.c](./example/udp.c)) `$ make tar=udp`
 
 *udp is changed to conform to the basic file descriptor io and not `sendto` and `recvfrom`*
 
