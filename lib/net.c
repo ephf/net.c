@@ -1,6 +1,7 @@
 #include "net.h"
 
-int serv_(int port, int backlog, int max_buf, int proto) {
+int serv_(int port, int backlog, int max_buf, int proto,
+    int exit_) {
     signal(SIGCHLD, SIG_IGN);
 
     int serv = socket(PF_INET, proto == P_TCP
@@ -15,7 +16,7 @@ int serv_(int port, int backlog, int max_buf, int proto) {
         sizeof(struct sockaddr_in))
     || proto == P_TCP &&
         listen(serv, backlog)) {
-            perror("serv()"); return -1; }
+            perror("serv()"); if(exit_) exit(1); return -1; }
     
     if(proto == P_TCP) {
         while((*req = accept(serv, 0, 0)) && fork())
@@ -29,7 +30,8 @@ int serv_(int port, int backlog, int max_buf, int proto) {
         (void*) &cl, &(int) { sizeof(cl) })) && fork())
         ;;
     
-    socketpair(AF_UNIX, SOCK_STREAM, 0, req);
+    if(socketpair(AF_UNIX, SOCK_STREAM, 0, req) == -1) {
+        perror("serv()/udp"); if(exit_) exit(1); return -1; }
     write(req[1], buf, n);
     if(fork()) { while((n = read(req[1], buf, max_buf)) > 0)
         sendto(serv, buf, n, 0, (void*) &cl, sizeof(cl));
@@ -37,7 +39,8 @@ int serv_(int port, int backlog, int max_buf, int proto) {
     return *req;
 }
 
-int con_(char* host, int port, int max_buf, int proto) {
+int con_(char* host, int port, int max_buf, int proto,
+    int exit_) {
     signal(SIGCHLD, SIG_IGN);
 
     int con = socket(PF_INET, proto == P_TCP
@@ -51,12 +54,13 @@ int con_(char* host, int port, int max_buf, int proto) {
         .sin_addr = ((struct sockaddr_in*)(void*)
             ai->ai_addr)->sin_addr },
         sizeof(struct sockaddr_in))) {
-            perror("con()"); return -1; }
+            perror("con()"); if(exit_) exit(1); return -1; }
     
     if(proto == P_TCP)
         return con;
     
-    socketpair(AF_UNIX, SOCK_STREAM, 0, req);
+    if(socketpair(AF_UNIX, SOCK_STREAM, 0, req) == -1) {
+        perror("serv()/udp"); if(exit_) exit(1); return -1; }
     char buf[max_buf];
 
     if(fork()) { while((n = read(req[1], buf, max_buf)) > 0)

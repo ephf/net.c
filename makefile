@@ -1,3 +1,3 @@
 a:
-	gcc -I lib example/$(tar).c lib/net.c -o out
+	gcc -I lib example/$(tar).c lib/*.c -o out
 	./out

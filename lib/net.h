@@ -18,15 +18,18 @@ enum {
 
 #define serv(port, o...) \
     ({ int backlog = 10, max_buf = 65507,\
-        proto = P_TCP; o;\
-    serv_(port, backlog, max_buf, proto); })
+        proto = P_TCP, exit = 1; o;\
+    serv_(port, backlog, max_buf, proto, exit); })
 
 #define con(host, port, o...) \
-    ({ int max_buf = 65507, proto = P_TCP; o;\
-    con_(host, port, max_buf, proto); })
+    ({ int max_buf = 65507, proto = P_TCP,\
+        exit = 1; o;\
+    con_(host, port, max_buf, proto, exit); })
 
-int serv_(int port, int backlog, int max_buf, int proto);
-int con_(char* host, int port, int max_buf, int proto);
+int serv_(int port, int backlog, int max_buf, int proto,
+    int exit);
+int con_(char* host, int port, int max_buf, int proto,
+    int exit);
 int end(int socket);
 
 #endif
