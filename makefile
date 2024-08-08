@@ -1,3 +1,3 @@
 a:
-	gcc main.c lib/tcp.c -o tcp
-	./tcp
+	gcc $(tar).c lib/net.c -o out
+	./out
