@@ -28,7 +28,7 @@ int main() {
 }
 ```
 
-> udp example (see [tcp.c](./tcp.c)) `$make tar=udp`
+> udp example (see [tcp.c](./tcp.c)) `$ make tar=udp`
 
 *udp is changed to conform to the basic file descriptor io and not `sendto` and `recvfrom`*
 
