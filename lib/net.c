@@ -1,29 +1,27 @@
 #include "net.h"
 
-int serv_(int port, int backlog, int max_buf, int protocol) {
+int serv_(int port, int backlog, int max_buf, int proto) {
     signal(SIGCHLD, SIG_IGN);
 
-    int serv = socket(PF_INET, protocol == P_TCP
+    int serv = socket(PF_INET, proto == P_TCP
         ? SOCK_STREAM : SOCK_DGRAM, 0), req[2] = { 1 }, n;
     
     if(serv == -1
-    || protocol == P_TCP &&
+    || proto == P_TCP &&
     setsockopt(serv, SOL_SOCKET, SO_REUSEADDR, req,
         sizeof(*req))
     || bind(serv, (void*) &(struct sockaddr_in) {
         .sin_family = AF_INET, .sin_port = htons(port) },
         sizeof(struct sockaddr_in))
-    || protocol == P_TCP &&
+    || proto == P_TCP &&
         listen(serv, backlog)) {
             perror("serv()"); return -1; }
     
-    if(protocol == P_TCP) {
+    if(proto == P_TCP) {
         while((*req = accept(serv, 0, 0)) && fork())
             ;;
         return *req;
     }
-
-    printf("SERVER UDP\n");
 
     struct sockaddr_in cl;
     char buf[max_buf];
@@ -39,10 +37,10 @@ int serv_(int port, int backlog, int max_buf, int protocol) {
     return *req;
 }
 
-int con_(char* host, int port, int max_buf, int protocol) {
+int con_(char* host, int port, int max_buf, int proto) {
     signal(SIGCHLD, SIG_IGN);
 
-    int con = socket(PF_INET, protocol == P_TCP
+    int con = socket(PF_INET, proto == P_TCP
         ? SOCK_STREAM : SOCK_DGRAM, 0), req[2], n;
     struct addrinfo* ai;
     
@@ -55,7 +53,7 @@ int con_(char* host, int port, int max_buf, int protocol) {
         sizeof(struct sockaddr_in))) {
             perror("con()"); return -1; }
     
-    if(protocol == P_TCP)
+    if(proto == P_TCP)
         return con;
     
     socketpair(AF_UNIX, SOCK_STREAM, 0, req);

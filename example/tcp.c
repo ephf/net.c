@@ -1,9 +1,9 @@
-#include "lib/net.h"
+#include <net.h>
 
 int main() {
     if(fork()) {
         // server
-        int req = serv(3000);
+        int req = serv(3000); // (backlog=10)
 
         char buf[16];
         read(req, buf, 16);
