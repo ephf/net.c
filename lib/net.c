@@ -60,7 +60,7 @@ int con_(char* host, int port, int max_buf, int proto,
         return con;
     
     if(socketpair(AF_UNIX, SOCK_STREAM, 0, req) == -1) {
-        perror("serv()/udp"); if(exit_) exit(1); return -1; }
+        perror("con()/udp"); if(exit_) exit(1); return -1; }
     char buf[max_buf];
 
     if(fork()) { while((n = read(req[1], buf, max_buf)) > 0)
